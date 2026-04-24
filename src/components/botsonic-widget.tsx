@@ -29,6 +29,7 @@ export function BotsonicWidget() {
     Botsonic("init", {
       serviceBaseUrl: "${baseUrl}",
       token: "${token}",
+      baseOrigin: "https://dropflow-app2.vercel.app",
     });
   `;
 
