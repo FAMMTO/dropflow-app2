@@ -3,7 +3,9 @@
 import Script from "next/script";
 
 export function BotsonicWidget() {
-  const token = process.env.NEXT_PUBLIC_BOTSONIC_TOKEN;
+  const token =
+    process.env.NEXT_PUBLIC_BOTSONIC_TOKEN ||
+    "27997401-c91d-4764-88f7-bef13b121db2";
   const baseUrl =
     process.env.NEXT_PUBLIC_BOTSONIC_SERVICE_URL ||
     "https://api-bot.writesonic.com";
