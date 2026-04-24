@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3f7fb;
+  --foreground: #0f172a;
+  --card: rgba(255, 255, 255, 0.92);
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #1d9e75;
+  --primary-foreground: #f8fffc;
+  --secondary: #e7edf4;
+  --secondary-foreground: #0f172a;
+  --muted: #edf2f7;
+  --muted-foreground: #64748b;
+  --accent: #dff5ec;
+  --accent-foreground: #0f6e56;
+  --destructive: #e24b4a;
+  --destructive-foreground: #fff7f7;
+  --border: rgba(148, 163, 184, 0.26);
+  --input: rgba(148, 163, 184, 0.34);
+  --ring: rgba(29, 158, 117, 0.6);
+  --radius: 1.25rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 8px);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+}
+
+.dark {
+  --background: #07121a;
+  --foreground: #eef6ff;
+  --card: rgba(10, 20, 30, 0.82);
+  --card-foreground: #eef6ff;
+  --popover: #081019;
+  --popover-foreground: #eef6ff;
+  --primary: #32b989;
+  --primary-foreground: #04110c;
+  --secondary: rgba(148, 163, 184, 0.12);
+  --secondary-foreground: #eef6ff;
+  --muted: rgba(148, 163, 184, 0.12);
+  --muted-foreground: #97a8bc;
+  --accent: rgba(50, 185, 137, 0.12);
+  --accent-foreground: #91f0c5;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #160606;
+  --border: rgba(148, 163, 184, 0.16);
+  --input: rgba(148, 163, 184, 0.22);
+  --ring: rgba(50, 185, 137, 0.42);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  background-image:
+    radial-gradient(circle at top left, rgba(29, 158, 117, 0.12), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 26%);
+}
+
+::selection {
+  background: rgba(29, 158, 117, 0.2);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
