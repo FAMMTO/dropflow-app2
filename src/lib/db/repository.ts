@@ -7,7 +7,7 @@ import {
 } from "@/lib/db";
 import { dailyProcesses, products } from "@/lib/db/schema";
 import { mockDailyProcesses, mockProducts } from "@/lib/mock-data";
-import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getUser, isSupabaseConfigured } from "@/lib/supabase/server";
 import type {
   DailyProcessInput,
   DailyProcessRecord,
@@ -51,7 +51,7 @@ export async function listProducts(): Promise<ProductConfigRecord[]> {
   }
 
   if (isSupabaseConfigured() && !isDatabaseConfigured()) {
-    const supabase = getSupabaseAdmin();
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("products")
       .select("*")
@@ -84,7 +84,13 @@ export async function listProducts(): Promise<ProductConfigRecord[]> {
   }
 
   const db = getDb();
-  const rows = await db.select().from(products).orderBy(asc(products.name));
+  const user = await getUser();
+  
+  if (!user) {
+    throw new Error("No estas autenticado.");
+  }
+  
+  const rows = await db.select().from(products).where(eq(products.ownerId, user.id)).orderBy(asc(products.name));
 
   return rows.map((row) =>
     normalizeProduct({
@@ -112,8 +118,11 @@ export async function saveProduct(payload: ProductConfigInput) {
   const notes = payload.notes?.trim() || null;
   const sku = payload.sku?.trim() || null;
 
+  const user = await getUser();
+  if (!user) throw new Error("No estas autenticado.");
+
   if (isSupabaseConfigured() && !isDatabaseConfigured()) {
-    const supabase = getSupabaseAdmin();
+    const supabase = await createClient();
 
     if (payload.id) {
       const { data, error } = await supabase
@@ -146,6 +155,7 @@ export async function saveProduct(payload: ProductConfigInput) {
     const { data, error } = await supabase
       .from("products")
       .insert({
+        owner_id: user.id,
         name: payload.name,
         sku,
         default_sale_price: payload.defaultSalePrice,
@@ -186,7 +196,7 @@ export async function saveProduct(payload: ProductConfigInput) {
         isActive: payload.isActive ?? true,
         updatedAt: now,
       })
-      .where(eq(products.id, payload.id))
+      .where(and(eq(products.id, payload.id), eq(products.ownerId, user.id)))
       .returning({ id: products.id });
 
     if (!updatedProduct) {
@@ -199,6 +209,7 @@ export async function saveProduct(payload: ProductConfigInput) {
   const [createdProduct] = await db
     .insert(products)
     .values({
+      ownerId: user.id,
       name: payload.name,
       sku,
       defaultSalePrice: payload.defaultSalePrice,
@@ -219,7 +230,7 @@ export async function deleteProduct(id: string) {
   }
 
   if (isSupabaseConfigured() && !isDatabaseConfigured()) {
-    const supabase = getSupabaseAdmin();
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("products")
       .delete()
@@ -239,9 +250,12 @@ export async function deleteProduct(id: string) {
   }
 
   const db = getDb();
+  const user = await getUser();
+  if (!user) throw new Error("No estas autenticado.");
+  
   const [deletedProduct] = await db
     .delete(products)
-    .where(eq(products.id, id))
+    .where(and(eq(products.id, id), eq(products.ownerId, user.id)))
     .returning({ id: products.id });
 
   if (!deletedProduct) {
@@ -261,7 +275,7 @@ export async function listDailyProcesses(): Promise<DailyProcessRecord[]> {
   );
 
   if (isSupabaseConfigured() && !isDatabaseConfigured()) {
-    const supabase = getSupabaseAdmin();
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("daily_processes")
       .select("*")
@@ -309,9 +323,13 @@ export async function listDailyProcesses(): Promise<DailyProcessRecord[]> {
   }
 
   const db = getDb();
+  const user = await getUser();
+  if (!user) throw new Error("No estas autenticado.");
+  
   const rows = await db
     .select()
     .from(dailyProcesses)
+    .where(eq(dailyProcesses.ownerId, user.id))
     .orderBy(asc(dailyProcesses.processDate));
 
   return rows.map((row) => ({
@@ -345,9 +363,12 @@ export async function saveDailyProcess(payload: DailyProcessInput) {
     demoGuard();
   }
 
+  const user = await getUser();
+  if (!user) throw new Error("No estas autenticado.");
+
   if (isSupabaseConfigured() && !isDatabaseConfigured()) {
     console.log("Usando Supabase para guardar...");
-    const supabase = getSupabaseAdmin();
+    const supabase = await createClient();
     const notes = payload.notes?.trim() || null;
     const totalSales = roundMoney(payload.salePrice * payload.unitsSold);
 
@@ -397,6 +418,7 @@ export async function saveDailyProcess(payload: DailyProcessInput) {
 
     // Build the data payload with all columns — nullable ones are optional
     const basePayload = {
+      owner_id: user.id,
       process_date: payload.processDate,
       ad_spend: payload.adSpend,
       total_sales: totalSales,
@@ -509,6 +531,7 @@ export async function saveDailyProcess(payload: DailyProcessInput) {
       and(
         eq(dailyProcesses.processDate, payload.processDate),
         eq(dailyProcesses.productId, payload.productId),
+        eq(dailyProcesses.ownerId, user.id)
       ),
     );
 
@@ -537,7 +560,7 @@ export async function saveDailyProcess(payload: DailyProcessInput) {
         notes,
         updatedAt: now,
       })
-      .where(eq(dailyProcesses.id, payload.id))
+      .where(and(eq(dailyProcesses.id, payload.id), eq(dailyProcesses.ownerId, user.id)))
       .returning();
 
     if (!updatedRecord) {
@@ -550,6 +573,7 @@ export async function saveDailyProcess(payload: DailyProcessInput) {
   const [createdRecord] = await db
     .insert(dailyProcesses)
     .values({
+      ownerId: user.id,
       productId: payload.productId,
       processDate: payload.processDate,
       adSpend: payload.adSpend,
@@ -572,7 +596,7 @@ export async function deleteDailyProcess(id: string) {
   }
 
   if (isSupabaseConfigured() && !isDatabaseConfigured()) {
-    const supabase = getSupabaseAdmin();
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("daily_processes")
       .delete()
@@ -592,9 +616,12 @@ export async function deleteDailyProcess(id: string) {
   }
 
   const db = getDb();
+  const user = await getUser();
+  if (!user) throw new Error("No estas autenticado.");
+  
   const [deletedRecord] = await db
     .delete(dailyProcesses)
-    .where(eq(dailyProcesses.id, id))
+    .where(and(eq(dailyProcesses.id, id), eq(dailyProcesses.ownerId, user.id)))
     .returning({
       id: dailyProcesses.id,
     });
