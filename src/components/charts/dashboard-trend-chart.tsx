@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useIsClient } from "@/hooks/use-is-client";
 import {
   Bar,
@@ -12,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/formatters";
 import type { TrendPoint } from "@/lib/types";
 
@@ -30,6 +32,7 @@ function toNumber(value: unknown) {
 
 export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
   const isClient = useIsClient();
+  const [view, setView] = useState<"sales" | "net">("sales");
 
   if (!isClient) {
     return (
@@ -49,11 +52,33 @@ export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Ventas y utilidad neta</CardTitle>
-        <CardDescription>
-          Últimos 7 registros para detectar días fuertes y días de fuga.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
+        <div className="space-y-1">
+          <CardTitle>Ventas y utilidad neta</CardTitle>
+          <CardDescription>
+            {view === "sales"
+              ? "Comparativa de ingresos totales vs utilidad."
+              : "Análisis profundo de la utilidad neta real."}
+          </CardDescription>
+        </div>
+        <div className="flex items-center gap-2 rounded-xl bg-muted/50 p-1">
+          <Button
+            variant={view === "sales" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 rounded-lg px-3"
+            onClick={() => setView("sales")}
+          >
+            Ventas
+          </Button>
+          <Button
+            variant={view === "net" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 rounded-lg px-3"
+            onClick={() => setView("net")}
+          >
+            Utilidad
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
@@ -85,18 +110,20 @@ export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
                 ]}
               />
               <Bar
-                dataKey="sales"
-                fill="rgba(59,130,246,0.72)"
+                dataKey={view === "sales" ? "sales" : "netProfit"}
+                fill={view === "sales" ? "rgba(59,130,246,0.72)" : "var(--color-primary)"}
                 radius={[10, 10, 0, 0]}
               />
-              <Line
-                type="monotone"
-                dataKey="netProfit"
-                stroke="var(--color-primary)"
-                strokeWidth={3}
-                dot={{ fill: "var(--color-primary)", strokeWidth: 0, r: 4 }}
-                activeDot={{ r: 5 }}
-              />
+              {view === "sales" && (
+                <Line
+                  type="monotone"
+                  dataKey="netProfit"
+                  stroke="var(--color-primary)"
+                  strokeWidth={3}
+                  dot={{ fill: "var(--color-primary)", strokeWidth: 0, r: 4 }}
+                  activeDot={{ r: 5 }}
+                />
+              )}
             </BarChart>
           </ResponsiveContainer>
         </div>
