@@ -15,7 +15,13 @@ export async function login(prevState: any, formData: FormData) {
   });
 
   if (error) {
-    return { ok: false, message: "Credenciales incorrectas" };
+    // Si es un error de credenciales, mostramos un mensaje amigable. 
+    // Para otros errores (como rate limit), mostramos el mensaje directo de Supabase.
+    const message = error.message === "Invalid login credentials" 
+      ? "Credenciales incorrectas" 
+      : error.message;
+    
+    return { ok: false, message };
   }
 
   revalidatePath("/", "layout");
