@@ -52,25 +52,25 @@
 }
 
 .dark {
-  --background: #07121a;
-  --foreground: #eef6ff;
-  --card: rgba(10, 20, 30, 0.82);
-  --card-foreground: #eef6ff;
-  --popover: #081019;
-  --popover-foreground: #eef6ff;
-  --primary: #32b989;
-  --primary-foreground: #04110c;
-  --secondary: rgba(148, 163, 184, 0.12);
-  --secondary-foreground: #eef6ff;
-  --muted: rgba(148, 163, 184, 0.12);
-  --muted-foreground: #97a8bc;
-  --accent: rgba(50, 185, 137, 0.12);
-  --accent-foreground: #91f0c5;
-  --destructive: #ff6b6b;
-  --destructive-foreground: #160606;
-  --border: rgba(148, 163, 184, 0.16);
-  --input: rgba(148, 163, 184, 0.22);
-  --ring: rgba(50, 185, 137, 0.42);
+  --background: #061019;
+  --foreground: #f2f8ff;
+  --card: rgba(13, 27, 39, 0.9);
+  --card-foreground: #f2f8ff;
+  --popover: #091623;
+  --popover-foreground: #f2f8ff;
+  --primary: #35d39a;
+  --primary-foreground: #03120d;
+  --secondary: rgba(65, 85, 108, 0.42);
+  --secondary-foreground: #e8f3ff;
+  --muted: rgba(33, 49, 67, 0.82);
+  --muted-foreground: #a8b8ca;
+  --accent: rgba(53, 211, 154, 0.16);
+  --accent-foreground: #9cf5cf;
+  --destructive: #ff6f6f;
+  --destructive-foreground: #210606;
+  --border: rgba(125, 150, 180, 0.24);
+  --input: rgba(125, 150, 180, 0.3);
+  --ring: rgba(53, 211, 154, 0.54);
 }
 
 * {
@@ -83,6 +83,13 @@ body {
   background-image:
     radial-gradient(circle at top left, rgba(29, 158, 117, 0.12), transparent 28%),
     radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 26%);
+}
+
+.dark body {
+  background-image:
+    radial-gradient(circle at 16% 0%, rgba(53, 211, 154, 0.16), transparent 30%),
+    radial-gradient(circle at 86% 18%, rgba(56, 112, 255, 0.14), transparent 28%),
+    linear-gradient(135deg, #061019 0%, #091522 44%, #050b12 100%);
 }
 
 ::selection {

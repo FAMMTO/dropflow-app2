@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function login(prevState: any, formData: FormData) {
+type AuthActionState = {
+  ok: boolean;
+  message: string;
+} | null;
+
+export async function login(_prevState: AuthActionState, formData: FormData) {
   const supabase = await createClient();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -28,7 +33,7 @@ export async function login(prevState: any, formData: FormData) {
   redirect("/");
 }
 
-export async function register(prevState: any, formData: FormData) {
+export async function register(_prevState: AuthActionState, formData: FormData) {
   const supabase = await createClient();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;

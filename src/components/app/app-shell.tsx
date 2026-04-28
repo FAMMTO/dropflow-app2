@@ -6,10 +6,10 @@ import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-4 px-4 py-4 md:flex-row md:px-6 lg:gap-6 lg:px-8">
         <aside className="md:sticky md:top-4 md:h-[calc(100vh-2rem)] md:w-[290px]">
-          <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(29,158,117,0.16),_transparent_38%),linear-gradient(180deg,#0f172a_0%,#111827_56%,#0b1120_100%)] p-4 text-white shadow-[0_35px_60px_-30px_rgba(15,23,42,0.65)]">
+          <div className="flex h-full flex-col rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(53,211,154,0.2),_transparent_38%),linear-gradient(180deg,#102231_0%,#0d1826_52%,#07101b_100%)] p-4 text-white shadow-[0_35px_70px_-34px_rgba(3,10,18,0.9)]">
             <div className="flex items-start justify-between gap-4">
               <Link href="/" className="space-y-2">
                 <div className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300">
@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.06] p-4 shadow-inner shadow-white/5">
               <p className="text-sm leading-6 text-slate-300">{APP_DESCRIPTION}</p>
             </div>
 
@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="mt-6 hidden rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300 md:block">
-              Centraliza cálculos, alertas y análisis sin depender de Excel.
+              Centraliza calculos, alertas y analisis sin depender de Excel.
             </div>
           </div>
         </aside>
@@ -50,7 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <ThemeToggle />
           </div>
 
-          <main className="flex-1 rounded-[28px] border border-border/70 bg-[radial-gradient(circle_at_top,_rgba(29,158,117,0.08),_transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.88),rgba(245,247,251,0.96))] p-4 shadow-[0_25px_65px_-40px_rgba(15,23,42,0.35)] backdrop-blur dark:bg-[radial-gradient(circle_at_top,_rgba(29,158,117,0.12),_transparent_30%),linear-gradient(180deg,rgba(10,18,28,0.95),rgba(5,12,18,0.98))] md:p-6 xl:p-8">
+          <main className="flex-1 rounded-[28px] border border-border/70 bg-[radial-gradient(circle_at_top,_rgba(29,158,117,0.08),_transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.88),rgba(245,247,251,0.96))] p-4 shadow-[0_25px_65px_-40px_rgba(15,23,42,0.35)] backdrop-blur dark:border-white/10 dark:bg-[radial-gradient(circle_at_top,_rgba(53,211,154,0.13),_transparent_30%),linear-gradient(180deg,rgba(13,27,39,0.94),rgba(6,16,25,0.98))] dark:shadow-[0_25px_80px_-48px_rgba(0,0,0,0.95)] md:p-6 xl:p-8">
             {children}
           </main>
         </div>

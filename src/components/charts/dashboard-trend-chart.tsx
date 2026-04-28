@@ -12,9 +12,23 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/formatters";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { formatCurrency, formatPercent } from "@/lib/formatters";
 import type { TrendPoint } from "@/lib/types";
 
 function toNumber(value: unknown) {
@@ -32,15 +46,16 @@ function toNumber(value: unknown) {
 
 export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
   const isClient = useIsClient();
-  const [view, setView] = useState<"sales" | "net">("sales");
+  const [view, setView] = useState<"sales" | "profit">("sales");
+  const profitRows = [...data].reverse();
 
   if (!isClient) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Ventas y utilidad neta</CardTitle>
+          <CardTitle>Ventas y ganancia neta diaria</CardTitle>
           <CardDescription>
-            Últimos 7 registros para detectar días fuertes y días de fuga.
+            Ultimos 7 registros para detectar dias fuertes y dias de fuga.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -52,69 +67,67 @@ export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-        <div className="space-y-1">
-          <CardTitle>Ventas y utilidad neta</CardTitle>
+      <CardHeader className="gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1.5">
+          <CardTitle>Ventas y ganancia neta diaria</CardTitle>
           <CardDescription>
-            {view === "sales"
-              ? "Comparativa de ingresos totales vs utilidad."
-              : "Análisis profundo de la utilidad neta real."}
+            Cambia entre cuanto vendiste y cuanto ganaste exacto cada dia.
           </CardDescription>
         </div>
-        <div className="flex items-center gap-2 rounded-xl bg-muted/50 p-1">
+        <div className="grid grid-cols-2 gap-2 rounded-2xl border border-border/80 bg-muted/40 p-1">
           <Button
-            variant={view === "sales" ? "default" : "ghost"}
+            type="button"
             size="sm"
-            className="h-8 rounded-lg px-3"
+            variant={view === "sales" ? "default" : "ghost"}
             onClick={() => setView("sales")}
           >
             Ventas
           </Button>
           <Button
-            variant={view === "net" ? "default" : "ghost"}
+            type="button"
             size="sm"
-            className="h-8 rounded-lg px-3"
-            onClick={() => setView("net")}
+            variant={view === "profit" ? "default" : "ghost"}
+            onClick={() => setView("profit")}
           >
-            Utilidad
+            Ganancia neta
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} barGap={10}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
-                tickFormatter={(value) => `$${Number(value) / 1000}k`}
-              />
-              <Tooltip
-                cursor={{ fill: "rgba(148,163,184,0.08)" }}
-                contentStyle={{
-                  borderRadius: 16,
-                  border: "1px solid var(--color-border)",
-                  background: "var(--color-card)",
-                }}
-                formatter={(value, name) => [
-                  formatCurrency(toNumber(value)),
-                  name === "sales" ? "Ventas" : "Utilidad neta",
-                ]}
-              />
-              <Bar
-                dataKey={view === "sales" ? "sales" : "netProfit"}
-                fill={view === "sales" ? "rgba(59,130,246,0.72)" : "var(--color-primary)"}
-                radius={[10, 10, 0, 0]}
-              />
-              {view === "sales" && (
+        {view === "sales" ? (
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} barGap={10}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                <XAxis
+                  dataKey="label"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "var(--color-muted-foreground)", fontSize: 12 }}
+                  tickFormatter={(value) => `$${Number(value) / 1000}k`}
+                />
+                <Tooltip
+                  cursor={{ fill: "rgba(148,163,184,0.08)" }}
+                  contentStyle={{
+                    borderRadius: 16,
+                    border: "1px solid var(--color-border)",
+                    background: "var(--color-card)",
+                  }}
+                  formatter={(value, name) => [
+                    formatCurrency(toNumber(value)),
+                    name === "sales" ? "Ventas" : "Ganancia neta",
+                  ]}
+                />
+                <Bar
+                  dataKey="sales"
+                  fill="rgba(59,130,246,0.72)"
+                  radius={[10, 10, 0, 0]}
+                />
                 <Line
                   type="monotone"
                   dataKey="netProfit"
@@ -123,10 +136,68 @@ export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
                   dot={{ fill: "var(--color-primary)", strokeWidth: 0, r: 4 }}
                   activeDot={{ r: 5 }}
                 />
-              )}
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-2xl border border-border/80">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Dia</TableHead>
+                  <TableHead>Producto</TableHead>
+                  <TableHead className="text-right">Ventas</TableHead>
+                  <TableHead className="text-right">Costos</TableHead>
+                  <TableHead className="text-right">Ganancia neta</TableHead>
+                  <TableHead className="text-right">Margen</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {profitRows.length ? (
+                  profitRows.map((row) => {
+                    const totalCosts = row.sales - row.netProfit;
+
+                    return (
+                      <TableRow key={`${row.date}-${row.productId}`}>
+                        <TableCell className="font-medium">{row.label}</TableCell>
+                        <TableCell className="max-w-[180px] truncate text-muted-foreground">
+                          {row.productName ?? "Producto"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(row.sales)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(totalCosts)}
+                        </TableCell>
+                        <TableCell
+                          className={
+                            row.netProfit >= 0
+                              ? "text-right font-semibold text-emerald-600"
+                              : "text-right font-semibold text-destructive"
+                          }
+                        >
+                          {formatCurrency(row.netProfit)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatPercent(row.netMargin)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="h-28 text-center text-muted-foreground"
+                    >
+                      Registra ventas para ver tus ganancias netas por dia.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
